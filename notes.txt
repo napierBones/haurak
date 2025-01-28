@@ -1,0 +1,125 @@
+Example for Dynamic Route Parameters
+For a route like /courses/[id]:
+
+// app/courses/[id]/page.tsx
+
+import React from 'react';
+
+const CoursePage = ({ params }: { params: { id: string } }) => {
+  const { id } = params;
+
+  return (
+    <div>
+      <h1>Course ID: {id}</h1>
+    </div>
+  );
+};
+
+export default CoursePage;
+//////////////////////////////////
+Example for Query Parameters
+For a route like /courses?display=true:
+// app/courses/page.tsx
+
+import React from 'react';
+
+const CoursesPage = ({ searchParams }: { searchParams: { [key: string]: string } }) => {
+  const display = searchParams.display === 'true';
+  const courseId = searchParams.courseId;
+
+  return (
+    <div>
+      {display && (
+        <div>
+          <p>Edit Mode Activated for Course ID: {courseId}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default CoursesPage;
+
+//////////////////////////////////
+
+Using URL Parameters in API Routes
+For API routes like /api/courses/[id]:
+
+// pages/api/courses/[id].ts
+
+import { NextApiRequest, NextApiResponse } from 'next';
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { id } = req.query; // Extract dynamic route parameter
+  res.status(200).json({ id });
+}
+
+//////////////////////////////////
+
+Example: Adding/Updating/Deleting Search Params
+For App Router (app/ directory)
+
+import { redirect } from "next/navigation";
+
+export async function modifySearchParams(currentUrl: string, action: string, key: string, value?: string) {
+  const url = new URL(currentUrl);
+  const searchParams = url.searchParams;
+
+  // Perform the action
+  if (action === "add" || action === "update") {
+    searchParams.set(key, value || "");
+  } else if (action === "delete") {
+    searchParams.delete(key);
+  }
+
+  // Construct the new URL
+  const updatedUrl = `${url.pathname}?${searchParams.toString()}`;
+
+  // Redirect to the updated URL
+  redirect(updatedUrl);
+}
+
+Usage Example
+
+// Call modifySearchParams from your server action
+export async function handleEdit() {
+  const currentUrl = "http://example.com/courses?display=true";
+  await modifySearchParams(currentUrl, "update", "display", "false");
+}
+
+//////////////////////////////////
+
+For API Routes or Custom Handlers
+In API routes, you can manipulate the query string and respond with the updated URL:
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  const url = new URL(req.url || "", `http://${req.headers.host}`);
+  const searchParams = url.searchParams;
+
+  // Example: Add, update, or delete parameters
+  searchParams.set("display", "true"); // Add or update
+  searchParams.delete("courseId"); // Delete
+
+  res.status(200).json({
+    updatedUrl: `${url.pathname}?${searchParams.toString()}`,
+  });
+}
+//////////////////////////////////
+Common Use Case
+Server Action to Modify Params:
+"use server";
+
+export async function editSearchParams(currentUrl: string, key: string, value: string) {
+  const url = new URL(currentUrl);
+  url.searchParams.set(key, value);
+  redirect(url.toString());
+}
+//////////////////////////////////
+
+In your component:
+
+<form action={() => editSearchParams("http://example.com/courses", "display", "true")}>
+  <button type="submit">Activate Edit Mode</button>
+</form>
+
