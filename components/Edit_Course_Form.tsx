@@ -41,7 +41,7 @@ export default function Edit_Course_Form({
     router.push(`?${newSearchString}`);
   };
 
-  if (!courseid) return <p>Course ID is required</p>;
+
   const form = useForm<CourseFormType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -50,7 +50,7 @@ export default function Edit_Course_Form({
       trainer: coursetrainer || '',
     },
   });
-
+  if (!courseid) return <p>Course ID is required</p>;
   const onSubmit = async (data: CourseFormType) => {
     console.log('data', data);
 
