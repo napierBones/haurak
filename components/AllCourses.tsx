@@ -1,9 +1,10 @@
-import { deleteCourse,  getAllQueryCourses } from '@/server_actions';
+
 
 import React from 'react';
 import { Button } from './ui/button';
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
+import { deleteCourse, getAllQueryCourses } from '@/db_serverActions';
 
 const AllCourses = async ({search}:{search:string | string[] | undefined}) => {
  const { courses } = await getAllQueryCourses(search as string);

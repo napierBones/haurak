@@ -1,6 +1,7 @@
 import { Courses } from '@/types';
-import { getAllCourses } from '@/server_actions';
+
 import { cn } from '@/lib/utils';
+import { getAllCourses } from '@/db_serverActions';
 
 const Dropdown = async ({ className }: { className?: string }) => {
  const { courses } = await getAllCourses();

@@ -4,4 +4,3 @@ export interface Courses {
     category: string;
     trainer: string;
   }
-  
